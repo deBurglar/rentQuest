@@ -27,6 +27,68 @@
             <h2>Sign Up</h2>
             <form id="signupForm">
                 <div class="input-group">
+                    <input type="email" id="email" name="email" required>
+                    <label for="email">Enter Email</label>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="username" name="username" required>
+                    <label for="username">Username</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" name="password" required>
+                    <label for="password">Password</label>
+                </div>
+
+                <div class="input-group">
+                    <label for="role">Role</label>
+                    <select id="role" name="role" required>
+                        <option value="student">Student</option>
+                        <option value="landlord">Landlord</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="login-btn signup-btn">Sign Up</button>
+            </form>
+            
+            <p class="sign-up">Already have an account? <a href="loginPage.html">Log in</a></p>
+        </div>
+    </main>
+    <script src="signup.js"></script>
+</body>
+</html>
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentQuest - Sign Up</title>
+    <link rel="stylesheet" href="signup.css">
+</head>
+<body>
+    <div class="background">
+        <div class="stars"></div>
+        <div class="aurora"></div>
+    </div>
+    <header>
+        <div class="logo">RentQuest</div>
+        <nav>
+            <a href="#">HOME</a>
+            <a href="#">FEATURED</a>
+            <a href="#">SERVICES</a>
+            <a href="#">ABOUT</a>
+            <a href="#">CONTACT</a>
+        </nav>
+    </header>
+    <main>
+        <h1>Join our community</h1>
+        <div class="login-container signup-container">
+            <h2>Sign Up</h2>
+            <form id="signupForm">
+                <div class="input-group">
                     <input type="text" id="name" name="name" required>
                     <label for="name">Enter Name</label>
                 </div>
@@ -49,9 +111,9 @@
                 <button type="submit" class="login-btn signup-btn">Sign Up</button>
             </form>
             
-            <p class="sign-up">Already have an account? <a href="login.html">Log in</a></p>
+            <p class="sign-up">Already have an account? <a href="loginPage.html">Log in</a></p>
         </div>
     </main>
     <script src="signup.js"></script>
 </body>
-</html>
+</html> -->
