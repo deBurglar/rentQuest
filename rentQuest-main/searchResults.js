@@ -1,14 +1,29 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const header = document.querySelector('header');
     const searchInput = document.querySelector('#searchBar');
     const searchBtn = document.querySelector('#searchBtn');
     const suggestionsContainer = document.getElementById('suggestions');
     const propertiesContainer = document.getElementById('properties');
+    const filterIcon = document.getElementById('filterIcon');
+    const filterModal = document.getElementById('filterModal');
+    const applyFiltersBtn = document.getElementById('applyFilters');
     
-    // Optional filters
-    const minPriceInput = document.getElementById('minPrice');
-    const maxPriceInput = document.getElementById('maxPrice');
-    const minSizeInput = document.getElementById('minSize');
-    const maxSizeInput = document.getElementById('maxSize');
+    // Filters
+    const priceSlider = document.getElementById('priceSlider');
+    const sizeSlider = document.getElementById('sizeSlider');
+    const minPrice = document.getElementById('minPrice');
+    const maxPrice = document.getElementById('maxPrice');
+    const minSize = document.getElementById('minSize');
+    const maxSize = document.getElementById('maxSize');
+
+    // Header background change on scroll
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) {
+            header.style.backgroundColor = 'rgba(30, 58, 138, 0.9)';
+        } else {
+            header.style.backgroundColor = 'rgba(10, 25, 47, 0.7)';
+        }
+    });
 
     // Function to render search results
     function renderProperties(properties) {
@@ -23,36 +38,37 @@ document.addEventListener('DOMContentLoaded', function () {
             propertyDiv.classList.add('property');
     
             // Use replace to remove the "image/" prefix
-            const imageUrl = property.property_images[0]["image"].replace("image/upload/","")
-
+            const imageUrl = property.property_images[0]["image"].replace("image/upload/","");
     
             propertyDiv.innerHTML = `
-                <a href="propertydetails.html?id=${property.id}" class="property-link">
                 <h3>${property.name}</h3>
-                <img src="${imageUrl}" alt="${property.name} image" /> <!-- Render image -->
+                <img src="${imageUrl}" alt="${property.name} image" />
                 <p>Location: ${property.location}</p>
-                <p>Price: ${property.price}</p>
+                <p>Price: ₹${property.price}</p>
                 <p>Size: ${property.size} sqft</p>
-            </a>
             `;
     
             propertiesContainer.appendChild(propertyDiv);
+
+            // Add fade-in animation to each property
+            setTimeout(() => {
+                propertyDiv.style.opacity = '1';
+                propertyDiv.style.transform = 'translateY(0)';
+            }, 100);
         });
     }
-    
-    
 
     // Function to perform the API call
     async function performSearch(query) {
-        const minPrice = minPriceInput.value || '';
-        const maxPrice = maxPriceInput.value || '';
-        const minSize = minSizeInput.value || '';
-        const maxSize = maxSizeInput.value || '';
+        const minPriceValue = priceSlider.value;
+        const maxPriceValue = 30000;
+        const minSizeValue = sizeSlider.value;
+        const maxSizeValue = 5000;
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/properties/search/?query=${query}&min_price=${minPrice}&max_price=${maxPrice}&min_size=${minSize}&max_size=${maxSize}`);
+            const response = await fetch(`http://127.0.0.1:8000/api/properties/search/?query=${query}&min_price=${minPriceValue}&max_price=${maxPriceValue}&min_size=${minSizeValue}&max_size=${maxSizeValue}`);
             const data = await response.json();
-            console.log(data),
+            console.log(data);
             renderProperties(data);
         } catch (error) {
             console.error('Error fetching properties:', error);
@@ -77,11 +93,95 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
-    const params = new URLSearchParams(window.location.search);
-    const queryFromURL = params.get('query');
-    if (queryFromURL) {
-        searchInput.value = queryFromURL;  // Set the search input
-        performSearch(queryFromURL);  // Perform search with the query
+
+    // Filter modal functionality
+    filterIcon.addEventListener('click', function() {
+        filterModal.style.display = 'block';
+    });
+
+    window.addEventListener('click', function(event) {
+        if (event.target == filterModal) {
+            filterModal.style.display = 'none';
+        }
+    });
+
+    applyFiltersBtn.addEventListener('click', function() {
+        filterModal.style.display = 'none';
+        const query = searchInput.value.trim();
+        if (query) {
+            performSearch(query);
+        }
+    });
+
+    // Slider functionality
+    priceSlider.addEventListener('input', function() {
+        const value = this.value;
+        minPrice.textContent = `₹${value}`;
+        maxPrice.textContent = '₹30,000';
+    });
+
+    sizeSlider.addEventListener('input', function() {
+        const value = this.value;
+        minSize.textContent = `${value} sqft`;
+        maxSize.textContent = '5,000 sqft';
+    });
+
+    // Animated background
+    const starsElement = document.querySelector('.stars');
+    let starsPosition = 0;
+    function animateStars() {
+        starsPosition -= 0.1;
+        if (starsPosition <= -100) {
+            starsPosition = 0;
+        }
+        starsElement.style.backgroundPosition = `0 ${starsPosition}%`;
+        
+        requestAnimationFrame(animateStars);
+    }
+    animateStars();
+
+    // Fade-in animation for the main content
+    const mainContent = document.querySelector('main');
+    mainContent.style.opacity = '0';
+    mainContent.style.transform = 'translateY(20px)';
+    mainContent.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+
+    setTimeout(() => {
+        mainContent.style.opacity = '1';
+        mainContent.style.transform = 'translateY(0)';
+    }, 100);
+
+    // Subtle hover effect for the logo
+    const logo = document.querySelector('.logo');
+    if (logo) {
+        logo.style.transition = 'transform 0.3s ease';
+        logo.addEventListener('mouseover', () => {
+            logo.style.transform = 'scale(1.05)';
+        });
+        logo.addEventListener('mouseout', () => {
+            logo.style.transform = 'scale(1)';
+        });
     }
 
+    // Pulsating effect for the search button
+    if (searchBtn) {
+        searchBtn.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+        setInterval(() => {
+            searchBtn.style.transform = 'scale(1.05)';
+            searchBtn.style.boxShadow = '0 0 15px rgba(74, 144, 226, 0.7)';
+            setTimeout(() => {
+                searchBtn.style.transform = 'scale(1)';
+                searchBtn.style.boxShadow = 'none';
+            }, 500);
+        }, 3000);
+    }
+
+    // Subtle animation for search input on focus
+    searchInput.addEventListener('focus', function() {
+        this.style.transition = 'transform 0.3s ease';
+        this.style.transform = 'translateX(5px)';
+    });
+    searchInput.addEventListener('blur', function() {
+        this.style.transform = 'translateX(0)';
+    });
 });
