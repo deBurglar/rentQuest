@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentQuest - Login</title>
+    <link rel="stylesheet" href="loginpage.css">
+</head>
+<body>
+    <div class="background">
+        <div class="stars"></div>
+        <div class="aurora"></div>
+    </div>
+    <header>
+        <div class="logo">RentQuest</div>
+        <nav>
+            <a href="#">HOME</a>
+            <a href="#">FEATURED</a>
+            <a href="#">SERVICES</a>
+            <a href="#">ABOUT</a>
+            <a href="#">CONTACT</a>
+        </nav>
+    </header>
+    <main>
+        <h1>Begin your Journey!</h1>
+        <div class="login-container">
+            <h2>Login</h2>
+            <div class="user-type">
+                <label>
+                    <input type="radio" name="userType" value="student" checked>
+                    Student
+                </label>
+                <label>
+                    <input type="radio" name="userType" value="landlord">
+                    Landlord
+                </label>
+            </div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <input type="text" id="username" name="username" required>
+                    <label for="username">Username</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" name="password" required>
+                    <label for="password">Password</label>
+                </div>
+                <div class="form-footer">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember">
+                        Remember me
+                    </label>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+            <p class="sign-up">Don't have an account? <a href="signup.html">Sign up</a></p>
+        </div>
+        <p id="login-message"></p>
+
+    </main>
+    <script src="loginPage.js"></script>
+</body>
+</html>

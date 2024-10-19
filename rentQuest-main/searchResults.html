@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - RentQuest</title>
+    <link rel="stylesheet" href="searchResults.css">
+</head>
+<body>
+    <header>
+        <div class="logo">RentQuest</div>
+        <nav>
+            <a href="/">HOME</a>
+            <a href="#featured">FEATURED</a>
+            <a href="#services">SERVICES</a>
+            <a href="#">ABOUT</a>
+            <a href="#">CONTACT</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="search-results">
+            <h2>Search Results</h2>
+            <div class="search-container">
+                <input type="text" id="searchBar" placeholder="Enter location" autocomplete="off">
+                <button id="searchBtn">Search</button>
+            </div>
+            <div class="filters">
+                <input type="number" id="minPrice" placeholder="Min Price">
+                <input type="number" id="maxPrice" placeholder="Max Price">
+                <input type="number" id="minSize" placeholder="Min Size (sqft)">
+                <input type="number" id="maxSize" placeholder="Max Size (sqft)">
+            </div>
+            <div id="suggestions" class="suggestions"></div>
+
+            <div id="properties">
+                <!-- Search results will be populated here -->
+            </div>
+        </section>
+    </main>
+
+    <script src="searchResults.js"></script>
+</body>
+</html>

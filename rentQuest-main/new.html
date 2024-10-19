@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Details - RentQuest</title>
+    <style>
+        /* Base styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #0a192f;
+            color: #ffffff;
+        }
+
+        /* Header styles */
+        header {
+            background-color: rgba(10, 25, 47, 0.9);
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4a90e2;
+        }
+
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            margin-left: 1rem;
+        }
+
+        /* Main content styles */
+        main {
+            padding-top: 60px; /* Adjust based on header height */
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 60px); /* Subtract header height */
+        }
+
+        .carousel {
+            width: 100%;
+            height: 300px;
+            background-color: #1a2a3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .prev { left: 10px; }
+        .next { right: 10px; }
+
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .property-details {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .nearby-places {
+            width: 300px;
+            padding: 1rem;
+            background-color: #1a2a3a;
+            overflow-y: auto;
+        }
+
+        .place-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .place-item h3 {
+            margin-top: 0;
+            color: #4a90e2;
+        }
+
+        .reviews {
+            padding: 1rem;
+            background-color: #1a2a3a;
+        }
+
+        .review {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">RentQuest</div>
+            <div>
+                <a href="#home">HOME</a>
+                <a href="#featured">FEATURED</a>
+                <a href="#services">SERVICES</a>
+                <a href="#about">ABOUT</a>
+                <a href="#contact">CONTACT</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="carousel">
+            <button class="carousel-button prev" onclick="moveSlide(-1)">&#10094;</button>
+            <div id="carousel-content">CAROUSEL</div>
+            <button class="carousel-button next" onclick="moveSlide(1)">&#10095;</button>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="property-details">
+                <h1 id="property-name">Property Name</h1>
+                <p id="property-location">Location</p>
+                <p id="property-price">Price</p>
+                <p id="property-size">Size</p>
+                <button id="contact-btn">Contact Landlord</button>
+            </div>
+
+            <div class="nearby-places">
+                <h2>Nearby Places</h2>
+                <div id="places-container"></div>
+            </div>
+        </div>
+
+        <div class="reviews">
+            <h2>Reviews</h2>
+            <div id="review-list"></div>
+            <button id="add-review-btn">Add a Review</button>
+        </div>
+    </main>
+
+    <script>
+        let currentSlide = 0;
+        let propertyId = null;
+
+        // Extract id from URL
+        const params = new URLSearchParams(window.location.search);
+        propertyId = params.get('id');
+
+        // Fetch property details
+        async function fetchPropertyDetails() {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/properties/detail/${propertyId}/`);
+                const property = await response.json();
+                displayPropertyDetails(property);
+
+                // Fetch nearby places after getting property details
+                const lat = property.property.latitude;
+                const lng = property.property.longitude;
+                fetchNearbyPlaces(lat, lng);
+
+                fetchReviews();
+            } catch (error) {
+                console.error('Error fetching property details:', error);
+            }
+        }
+
+        // Display property details
+        function displayPropertyDetails(property) {
+            document.getElementById('property-name').innerText = property.property.name;
+            document.getElementById('property-location').innerText = `Location: ${property.property.location}`;
+            document.getElementById('property-price').innerText = `Price: ₹${property.property.price}/month`;
+            document.getElementById('property-size').innerText = `Size: ${property.property.size} sq ft`;
+
+            const carouselContent = document.getElementById('carousel-content');
+            carouselContent.innerHTML = property.images.map((image, index) => 
+                `<img src="${image.image.replace("image/upload/","")}" alt="Property Image ${index + 1}" style="display: ${index === 0 ? 'block' : 'none'};">`
+            ).join('');
+        }
+
+        // Carousel functionality
+        function moveSlide(direction) {
+            const images = document.querySelectorAll('#carousel-content img');
+            images[currentSlide].style.display = 'none';
+            currentSlide = (currentSlide + direction + images.length) % images.length;
+            images[currentSlide].style.display = 'block';
+        }
+
+        // Fetch nearby places
+        async function fetchNearbyPlaces(lat, lng) {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/properties/nearby-places/?lat=${lat}&lng=${lng}`);
+                const data = await response.json();
+                displayNearbyPlaces(data.results);
+            } catch (error) {
+                console.error('Error fetching nearby places:', error);
+            }
+        }
+
+        // Display nearby places
+        function displayNearbyPlaces(places) {
+            const placesContainer = document.getElementById('places-container');
+            placesContainer.innerHTML = places.map(place => `
+                <div class="place-item">
+                    <h3>${place.name}</h3>
+                    <p>Vicinity: ${place.vicinity}</p>
+                    <p>Rating: ${place.rating || 'N/A'}</p>
+                    <p>Status: ${place.business_status === "OPERATIONAL" ? "Open" : "Closed"}</p>
+                    <p>Type: ${place.types[0].replace(/_/g, ' ')}</p>
+                </div>
+            `).join('');
+        }
+
+        // Fetch reviews
+        async function fetchReviews() {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/reviews/reviews/?property_id=${propertyId}`);
+                const reviews = await response.json();
+                displayReviews(reviews);
+            } catch (error) {
+                console.error('Error fetching reviews:', error);
+            }
+        }
+
+        // Display reviews
+        function displayReviews(reviews) {
+            const reviewList = document.getElementById('review-list');
+            reviewList.innerHTML = reviews.map(review => `
+                <div class="review">
+                    <p>Rating: ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</p>
+                    <p>Comment: ${review.comment}</p>
+                </div>
+            `).join('');
+        }
+
+        // Event listeners
+        document.getElementById('contact-btn').addEventListener('click', function() {
+            alert('Contact functionality to be implemented');
+        });
+
+        document.getElementById('add-review-btn').addEventListener('click', function() {
+            alert('Add review functionality to be implemented');
+        });
+
+        // Initialize the property details view
+        fetchPropertyDetails();
+    </script>
+</body>
+</html>

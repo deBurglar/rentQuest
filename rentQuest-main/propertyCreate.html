@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Property - RentQuest</title>
+    <link rel="stylesheet" href="propertyCreate.css">
+</head>
+<body>
+    <div class="background">
+        <div class="stars"></div>
+        <div class="aurora"></div>
+    </div>
+    <header>
+        <div class="logo">RentQuest</div>
+        <nav>
+            <a href="home.html">HOME</a>
+            <a href="propertyList.html">MY PROPERTIES</a>
+            <a href="logout.html">LOGOUT</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Create a New Property</h1>
+            <form id="property-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">Property Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="number" step="0.01" id="price" name="price" required>
+                </div>
+                <div class="form-group">
+                    <label for="size">Size (sqft)</label>
+                    <input type="number" id="size" name="size" required>
+                </div>
+                <div class="form-group">
+                    <label for="images">Images:</label>
+                    <input type="file" id="images" name="images" multiple accept="image/*" required>
+                </div>
+                <button type="submit" id="submit-btn">Create Property</button>
+            </form>
+
+            <div id="response-message" style="display: none;"></div>
+        </div>
+    </main>
+
+    <script src="propertyCreate.js"></script>
+</body>
+</html>
