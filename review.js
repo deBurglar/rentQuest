@@ -1,10 +1,64 @@
-document.addEventListener('DOMContentLoaded', function() {
+// Function to refresh token
+async function refreshToken() {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) {
+        console.log('No refresh token found.');
+        return;
+    }
+
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/login/refresh/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ refresh: refreshToken })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to refresh token');
+        }
+
+        const data = await response.json();
+        localStorage.setItem('token', data.access);  // Update the access token
+        console.log('Token refreshed successfully');
+    } catch (error) {
+        console.error('Error refreshing token:', error);
+    }
+}
+
+// Function to send the review
+async function sendReview(formData) {
+    await refreshToken();  // Ensure token is refreshed before making the request
+
+    const token = localStorage.getItem('token');  // Get updated token from localStorage
+    const response = await fetch('http://127.0.0.1:8000/api/reviews/reviews/', {  // Adjust the endpoint accordingly
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,  // Include the refreshed token
+        },
+        body: formData
+    });
+
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+
+    return response.json();  // Return the server response
+}
+
+document.addEventListener('DOMContentLoaded', function () {
     const header = document.querySelector('header');
     const form = document.getElementById('tenantReviewForm');
     const submitBtn = document.querySelector('.submit-btn');
 
+    // Set the propertyId from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const propertyId = urlParams.get('propertyId');
+    document.getElementById('propertyId').value = propertyId;
+
     // Header background change on scroll
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', function () {
         if (window.scrollY > 50) {
             header.style.backgroundColor = 'rgba(30, 58, 138, 0.9)';
         } else {
@@ -13,22 +67,38 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Form submission
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
         e.preventDefault();
         const formData = new FormData(form);
-        console.log('Form submitted:', Object.fromEntries(formData));
-        // Here you would typically send this data to your server
-        alert('Thank you for your review!');
-        form.reset();
+
+        // Modify formData to match backend model field names
+        formData.append('property', propertyId);  // Set the property ID as 'property' field
+        formData.delete('propertyId');  // Remove unnecessary 'propertyId' field
+
+        // Optionally remove unnecessary fields (e.g., fullName, email)
+        formData.delete('fullName');
+        formData.delete('email');
+        formData.delete('propertyName');  // Assuming not needed based on propertyId
+
+        console.log('Form submitted:', Object.fromEntries(formData));  // Log the form data
+
+        sendReview(formData).then(() => {
+            alert('Thank you for your review!');
+            window.location.href = `propertyDetails.html?id=${propertyId}`;  // Redirect back to the property details page
+        }).catch(error => {
+            console.error('Error submitting review:', error);
+        });
+
+        form.reset();  // Reset the form after submission
     });
 
     // Input animations
     const inputs = form.querySelectorAll('input, textarea');
     inputs.forEach(input => {
-        input.addEventListener('focus', function() {
+        input.addEventListener('focus', function () {
             this.parentElement.classList.add('focused');
         });
-        input.addEventListener('blur', function() {
+        input.addEventListener('blur', function () {
             if (this.value === '') {
                 this.parentElement.classList.remove('focused');
             }
@@ -44,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
             starsPosition = 0;
         }
         starsElement.style.backgroundPosition = `0 ${starsPosition}%`;
-        
+
         requestAnimationFrame(animateStars);
     }
     animateStars();

@@ -1,0 +1,160 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="propertyDetails.css">
+    <title>Property Details - RentQuest</title>
+    <style>
+        /* Hide success and failure buttons initially */
+        #payment-response {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .response-btn {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .response-btn.failure {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="stars"></div>
+        <div class="aurora"></div>
+    </div>
+    <header>
+        <div class="logo">RentQuest</div>
+        <nav>
+            <a href="home.html">HOME</a>
+            <a href="home.html#featured">FEATURED</a>
+            <a href="home.html#services">SERVICES</a>
+            <a href="home.html#about">ABOUT</a>
+            <a href="home.html#contact">CONTACT</a>
+        </nav>
+    </header>
+    <main>
+        <div class="container">
+            <section id="property-images">
+                <div class="carousel">
+                    <div class="carousel-images"></div>
+                    <button class="carousel-button prev" onclick="moveSlide(-1)">&#10094;</button>
+                    <button class="carousel-button next" onclick="moveSlide(1)">&#10095;</button>
+                </div>
+            </section>
+            <section id="property-info">
+                <h1 id="property-name"></h1>
+                <p id="property-location"></p>
+                <p id="property-price"></p>
+                <p id="property-size"></p>
+                <button class="contact-btn" id="contact-btn">Contact Landlord</button>
+            </section>
+            <!-- Payment response section -->
+            <div id="payment-response">
+                <button class="response-btn success" id="success-btn">Payment Success</button>
+                <button class="response-btn failure" id="failure-btn">Payment Failed</button>
+            </div>
+            <section id="nearby-places-section">
+                <h2>Nearby Places</h2>
+                <div id="places-container"></div>
+            </section>
+            <section id="reviews-section">
+                <h2>Reviews</h2>
+                <div id="review-list"></div>
+                <button class="add-review-btn" id="add-review-btn">Add a Review</button>
+            </section>
+        </div>
+    </main>
+    <script src="propertyDetails.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const header = document.querySelector('header');
+            const navLinks = document.querySelectorAll('nav a');
+            const contactBtn = document.getElementById('contact-btn');
+            const paymentResponseDiv = document.getElementById('payment-response');
+            const successBtn = document.getElementById('success-btn');
+            const failureBtn = document.getElementById('failure-btn');
+
+            // Header background change on scroll
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    header.style.backgroundColor = 'rgba(30, 58, 138, 0.9)';
+                } else {
+                    header.style.backgroundColor = 'rgba(26, 0, 51, 0.7)';
+                }
+            });
+
+            // Smooth scrolling for navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    
+                    // Only scroll if the target section is within the same page
+                    if (targetSection && targetId.startsWith('#')) {
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+
+                        // Add a class to trigger the transition
+                        targetSection.classList.add('active');
+
+                        // Remove the class after the transition
+                        setTimeout(() => {
+                            targetSection.classList.remove('active');
+                        }, 1000);
+                    } else {
+                        // Navigate to the page
+                        window.location.href = targetId;
+                    }
+                });
+            });
+
+            contactBtn.addEventListener('click', function() {
+                window.open('https://rzp.io/rzp/H7zMIyR6', '_blank');
+
+                // Show the success and failure buttons
+                paymentResponseDiv.style.display = 'block';
+            });
+
+            // Success button click - show dummy number
+            successBtn.addEventListener('click', function() {
+                alert("Landlord's contact: 9999999999");  // Dummy contact number
+            });
+
+            // Failure button click - show payment failed message
+            failureBtn.addEventListener('click', function() {
+                alert('Payment failed. Please try again.');
+            });
+
+            // Animated background
+            const starsElement = document.querySelector('.stars');
+            let starsPosition = 0;
+            function animateStars() {
+                starsPosition -= 0.1;
+                if (starsPosition <= -100) {
+                    starsPosition = 0;
+                }
+                starsElement.style.backgroundPosition = `0 ${starsPosition}%`;
+                requestAnimationFrame(animateStars);
+            }
+            animateStars();
+        });
+    </script>
+</body>
+</html>
+
+
+
